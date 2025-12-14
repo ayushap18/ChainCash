@@ -56,7 +56,7 @@ export const REWARD_TIERS: RewardTierConfig[] = [
     description: 'Dedicated supporter with exclusive access',
     emoji: '🥈',
     color: '#C0C0C0',
-    benefits: ['All Bronze benefits', 'Beta access', 'Exclusive Discord role']
+    benefits: ['All Bronze benefits', 'Beta access', 'Exclusive supporter role']
   },
   {
     tier: RewardTier.GOLD,

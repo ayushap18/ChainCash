@@ -255,24 +255,14 @@ export default function CampaignPage({ params }: CampaignPageProps) {
                       )}
                     </div>
 
-                    {/* Social Links */}
-                    {(selectedCampaign.twitter || selectedCampaign.discord || selectedCampaign.website) && (
+                    {/* Links */}
+                    {selectedCampaign.website && (
                       <div className="mt-8 pt-8 border-t border-[#435663]">
                         <h3 className="text-lg font-semibold text-[#FFF8D4] mb-4">Connect</h3>
                         <div className="flex flex-wrap gap-3">
                           {selectedCampaign.website && (
                             <a href={selectedCampaign.website} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#435663] hover:bg-[#435663]/80 rounded-lg text-[#FFF8D4]/80 transition-colors flex items-center gap-2">
                               🌐 Website
-                            </a>
-                          )}
-                          {selectedCampaign.twitter && (
-                            <a href={`https://twitter.com/${selectedCampaign.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#435663] hover:bg-[#435663]/80 rounded-lg text-[#FFF8D4]/80 transition-colors flex items-center gap-2">
-                              🐦 Twitter
-                            </a>
-                          )}
-                          {selectedCampaign.discord && (
-                            <a href={`https://${selectedCampaign.discord}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#435663] hover:bg-[#435663]/80 rounded-lg text-[#FFF8D4]/80 transition-colors flex items-center gap-2">
-                              💬 Discord
                             </a>
                           )}
                         </div>

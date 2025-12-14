@@ -461,7 +461,7 @@ export default function HomePage() {
               Ready to Support Indie Games?
             </h2>
             <p className="text-xl text-[#FFF8D4]/70 mb-8 max-w-2xl mx-auto">
-              Join the ChainCash community and help bring amazing indie games to life 
+              Join ChainCash and help bring amazing indie games to life 
               while earning exclusive NFT rewards.
             </p>
             
@@ -493,7 +493,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-12 bg-[#313647] border-t border-[#435663]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Logo */}
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -530,19 +530,6 @@ export default function HomePage() {
               <h4 className="text-[#FFF8D4] font-semibold mb-4">Resources</h4>
               <ul className="space-y-2">
                 {['Documentation', 'API', 'Smart Contracts', 'GitHub'].map((link) => (
-                  <li key={link}>
-                    <span className="text-[#FFF8D4]/50 hover:text-[#A3B087] transition text-sm cursor-pointer">
-                      {link}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-[#FFF8D4] font-semibold mb-4">Community</h4>
-              <ul className="space-y-2">
-                {['Discord', 'Twitter', 'Telegram', 'Forum'].map((link) => (
                   <li key={link}>
                     <span className="text-[#FFF8D4]/50 hover:text-[#A3B087] transition text-sm cursor-pointer">
                       {link}
