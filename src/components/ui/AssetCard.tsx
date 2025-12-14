@@ -13,11 +13,14 @@ interface AssetCardProps {
 
 const rarityColors: Record<string, { bg: string; border: string; text: string }> = {
   common: { bg: 'bg-[#FFF8D4]/10', border: 'border-[#FFF8D4]/30', text: 'text-[#FFF8D4]/60' },
-  uncommon: { bg: 'bg-green-500/20', border: 'border-green-500', text: 'text-green-400' },
-  rare: { bg: 'bg-blue-500/20', border: 'border-blue-500', text: 'text-blue-400' },
-  epic: { bg: 'bg-purple-500/20', border: 'border-purple-500', text: 'text-purple-400' },
-  legendary: { bg: 'bg-amber-500/20', border: 'border-amber-500', text: 'text-amber-400' },
+  uncommon: { bg: 'bg-green-500/20', border: 'border-green-500/50', text: 'text-green-400' },
+  rare: { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400' },
+  epic: { bg: 'bg-purple-500/20', border: 'border-purple-500/50', text: 'text-purple-400' },
+  legendary: { bg: 'bg-amber-500/20', border: 'border-amber-500/50', text: 'text-amber-400' },
+  mythic: { bg: 'bg-red-500/20', border: 'border-red-500/50', text: 'text-red-400' },
 };
+
+const defaultRarity = { bg: 'bg-[#435663]/20', border: 'border-[#435663]', text: 'text-[#FFF8D4]/60' };
 
 const categoryIcons: Record<string, string> = {
   character: '👤',
@@ -29,7 +32,7 @@ const categoryIcons: Record<string, string> = {
 
 export default function AssetCard({ asset, onClick, showBuyButton = true }: AssetCardProps) {
   const { addItem, openCart } = useCartStore();
-  const rarity = rarityColors[asset.rarity];
+  const rarity = rarityColors[asset.rarity] ?? defaultRarity;
   const soldPercentage = (asset.soldCount / asset.totalSupply) * 100;
   const isSoldOut = asset.soldCount >= asset.totalSupply;
 
@@ -45,7 +48,7 @@ export default function AssetCard({ asset, onClick, showBuyButton = true }: Asse
       animate={{ opacity: 1, y: 0 }}
       onClick={onClick}
       className={`
-        relative overflow-hidden rounded-2xl bg-[#435663]/30 border ${rarity.border}/30
+        relative overflow-hidden rounded-2xl bg-[#435663]/30 border ${rarity.border}
         hover:border-[#A3B087]/50 transition-all duration-300 cursor-pointer
         group
       `}
@@ -58,13 +61,13 @@ export default function AssetCard({ asset, onClick, showBuyButton = true }: Asse
         {/* Header with category and rarity */}
         <div className="flex justify-between items-start mb-4">
           <span className="text-2xl">{categoryIcons[asset.category]}</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${rarity.bg} ${rarity.text} border ${rarity.border}/50`}>
-            {asset.rarity.toUpperCase()}
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${rarity.bg} ${rarity.text} border ${rarity.border}`}>
+            {(asset.rarity ?? 'common').toUpperCase()}
           </span>
         </div>
 
         {/* Asset image placeholder */}
-        <div className={`w-full h-40 rounded-xl ${rarity.bg} mb-4 flex items-center justify-center border ${rarity.border}/20`}>
+        <div className={`w-full h-40 rounded-xl ${rarity.bg} mb-4 flex items-center justify-center border ${rarity.border}`}>
           <div className="text-6xl opacity-50">
             {categoryIcons[asset.category]}
           </div>
