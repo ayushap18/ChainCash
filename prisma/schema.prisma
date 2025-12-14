@@ -1,0 +1,339 @@
+// Prisma Schema for ChainCash Crowdfunding Platform
+// Run: npx prisma init (to create this file in prisma/schema.prisma)
+// Then: npx prisma generate && npx prisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MODEL
+// ============================================
+model User {
+  id            String    @id @default(cuid())
+  walletAddress String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  campaigns     Campaign[]  @relation("DeveloperCampaigns")
+  purchases     Purchase[]
+  assets        UserAsset[]
+  listings      Listing[]
+}
+
+// ============================================
+// CAMPAIGN MODEL
+// ============================================
+model Campaign {
+  id              String         @id @default(cuid())
+  
+  // Basic info
+  title           String
+  description     String         @db.Text
+  shortDesc       String?        @db.VarChar(500)
+  
+  // Developer
+  developer       User           @relation("DeveloperCampaigns", fields: [developerId], references: [id])
+  developerId     String
+  studioName      String?
+  
+  // Funding
+  goalAmount      BigInt         // in nanoERG
+  raisedAmount    BigInt         @default(0)
+  reserveRatio    Float          @default(0.6) // 60% reserve backing
+  
+  // Status & dates
+  status          CampaignStatus @default(DRAFT)
+  startDate       DateTime       @default(now())
+  endDate         DateTime
+  
+  // Media
+  bannerUrl       String?
+  thumbnailUrl    String?
+  videoUrl        String?
+  
+  // Social links
+  website         String?
+  twitter         String?
+  discord         String?
+  
+  // Metadata
+  tags            String[]
+  genre           String?
+  platforms       String[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  // Relations
+  assets          GameAsset[]
+  milestones      Milestone[]
+  updates         CampaignUpdate[]
+  
+  @@index([status])
+  @@index([developerId])
+}
+
+enum CampaignStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  FUNDED
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ============================================
+// GAME ASSET MODEL
+// ============================================
+model GameAsset {
+  id              String        @id @default(cuid())
+  
+  // Campaign relation
+  campaign        Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId      String
+  
+  // Asset info
+  name            String
+  description     String        @db.Text
+  
+  // Pricing
+  price           BigInt        // in nanoERG
+  reservePrice    BigInt?       // Minimum redemption value
+  
+  // Classification
+  category        AssetCategory
+  rarity          AssetRarity
+  
+  // Supply
+  totalSupply     Int
+  soldCount       Int           @default(0)
+  
+  // Blockchain
+  tokenId         String?       // Ergo token ID when minted
+  contractAddress String?       // Smart contract address
+  
+  // Media
+  imageUrl        String
+  modelUrl        String?       // 3D model URL
+  animationUrl    String?
+  
+  // Metadata
+  attributes      Json?         // Game-specific attributes
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Relations
+  purchases       Purchase[]
+  userAssets      UserAsset[]
+  listings        Listing[]
+  
+  @@index([campaignId])
+  @@index([category])
+  @@index([rarity])
+}
+
+enum AssetCategory {
+  CHARACTER
+  WEAPON
+  ARMOR
+  CONSUMABLE
+  COSMETIC
+  LAND
+  MOUNT
+  COMPANION
+  BLUEPRINT
+  CURRENCY
+  OTHER
+}
+
+enum AssetRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+// ============================================
+// PURCHASE MODEL
+// ============================================
+model Purchase {
+  id              String         @id @default(cuid())
+  
+  // User relation
+  user            User           @relation(fields: [userId], references: [id])
+  userId          String
+  
+  // Asset relation
+  asset           GameAsset      @relation(fields: [assetId], references: [id])
+  assetId         String
+  
+  // Transaction
+  txId            String         // Ergo transaction ID
+  price           BigInt         // Price paid in nanoERG
+  
+  // Status
+  status          PurchaseStatus @default(PENDING)
+  
+  // Blockchain confirmation
+  confirmations   Int            @default(0)
+  boxId           String?        // Output box ID containing the token
+  
+  createdAt       DateTime       @default(now())
+  confirmedAt     DateTime?
+  
+  @@unique([txId])
+  @@index([userId])
+  @@index([assetId])
+  @@index([status])
+}
+
+enum PurchaseStatus {
+  PENDING
+  CONFIRMING
+  CONFIRMED
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// USER ASSET MODEL (Owned tokens)
+// ============================================
+model UserAsset {
+  id              String     @id @default(cuid())
+  
+  // Relations
+  user            User       @relation(fields: [userId], references: [id])
+  userId          String
+  asset           GameAsset  @relation(fields: [assetId], references: [id])
+  assetId         String
+  
+  // Blockchain
+  boxId           String?    // Current Ergo box ID containing the token
+  tokenId         String?    // Token ID if minted
+  
+  // State
+  isRedeemed      Boolean    @default(false)
+  redeemedAt      DateTime?
+  
+  // Marketplace
+  isForSale       Boolean    @default(false)
+  
+  // Metadata
+  serialNumber    Int?       // Edition number
+  
+  acquiredAt      DateTime   @default(now())
+  
+  // Relations
+  listing         Listing?
+  
+  @@unique([userId, assetId, serialNumber])
+  @@index([userId])
+  @@index([assetId])
+}
+
+// ============================================
+// MARKETPLACE LISTING MODEL
+// ============================================
+model Listing {
+  id              String        @id @default(cuid())
+  
+  // Relations
+  seller          User          @relation(fields: [sellerId], references: [id])
+  sellerId        String
+  userAsset       UserAsset     @relation(fields: [userAssetId], references: [id])
+  userAssetId     String        @unique
+  asset           GameAsset     @relation(fields: [assetId], references: [id])
+  assetId         String
+  
+  // Pricing
+  price           BigInt        // Listing price in nanoERG
+  
+  // Status
+  status          ListingStatus @default(ACTIVE)
+  
+  // Dates
+  createdAt       DateTime      @default(now())
+  expiresAt       DateTime?
+  soldAt          DateTime?
+  
+  @@index([sellerId])
+  @@index([assetId])
+  @@index([status])
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  CANCELLED
+  EXPIRED
+}
+
+// ============================================
+// MILESTONE MODEL
+// ============================================
+model Milestone {
+  id              String   @id @default(cuid())
+  
+  // Campaign relation
+  campaign        Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId      String
+  
+  // Milestone info
+  title           String
+  description     String   @db.Text
+  
+  // Target
+  targetAmount    BigInt   // Amount needed to unlock
+  
+  // Status
+  isCompleted     Boolean  @default(false)
+  completedAt     DateTime?
+  
+  // Order
+  order           Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([campaignId])
+}
+
+// ============================================
+// CAMPAIGN UPDATE MODEL
+// ============================================
+model CampaignUpdate {
+  id              String   @id @default(cuid())
+  
+  // Campaign relation
+  campaign        Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId      String
+  
+  // Update content
+  title           String
+  content         String   @db.Text
+  
+  // Type
+  type            UpdateType @default(UPDATE)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([campaignId])
+}
+
+enum UpdateType {
+  UPDATE
+  MILESTONE_REACHED
+  ANNOUNCEMENT
+  DELAY
+  LAUNCH
+}

@@ -1,26 +1,191 @@
 @import "tailwindcss";
 
+/* ChainCash Color Palette */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --cc-dark: #313647;
+  --cc-slate: #435663;
+  --cc-sage: #A3B087;
+  --cc-cream: #FFF8D4;
+  
+  /* Semantic Colors */
+  --background: #313647;
+  --background-secondary: #435663;
+  --foreground: #FFF8D4;
+  --foreground-muted: rgba(255, 248, 212, 0.7);
+  --accent: #A3B087;
+  --accent-hover: #b8c49a;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #313647 0%, #435663 100%);
+  --gradient-accent: linear-gradient(135deg, #A3B087 0%, #8a9a6f 100%);
+  --gradient-card: linear-gradient(145deg, rgba(67, 86, 99, 0.5) 0%, rgba(49, 54, 71, 0.8) 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(49, 54, 71, 0.3);
+  --shadow-md: 0 4px 16px rgba(49, 54, 71, 0.4);
+  --shadow-lg: 0 8px 32px rgba(49, 54, 71, 0.5);
+  --shadow-glow: 0 0 20px rgba(163, 176, 135, 0.3);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-cc-dark: #313647;
+  --color-cc-slate: #435663;
+  --color-cc-sage: #A3B087;
+  --color-cc-cream: #FFF8D4;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cc-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cc-slate);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cc-sage);
+}
+
+/* Selection */
+::selection {
+  background: var(--cc-sage);
+  color: var(--cc-dark);
+}
+
+/* Focus States */
+*:focus-visible {
+  outline: 2px solid var(--cc-sage);
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.glass {
+  background: rgba(67, 86, 99, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(163, 176, 135, 0.2);
+}
+
+.glass-dark {
+  background: rgba(49, 54, 71, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(67, 86, 99, 0.3);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--cc-cream) 0%, var(--cc-sage) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-primary {
+  background: var(--cc-sage);
+  color: var(--cc-dark);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--cc-cream);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid var(--cc-sage);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: rgba(163, 176, 135, 0.1);
+  border-color: var(--cc-cream);
+}
+
+.card {
+  background: var(--gradient-card);
+  border-radius: 1rem;
+  border: 1px solid rgba(163, 176, 135, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(163, 176, 135, 0.4);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-4px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(163, 176, 135, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(163, 176, 135, 0.5); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(67, 86, 99, 0.3) 25%,
+    rgba(67, 86, 99, 0.5) 50%,
+    rgba(67, 86, 99, 0.3) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
