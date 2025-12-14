@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "make:ppt": "node scripts/generate-ppt.mjs"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^4.3.7",
@@ -32,6 +33,7 @@
     "@types/three": "^0.182.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "pptxgenjs": "^4.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
