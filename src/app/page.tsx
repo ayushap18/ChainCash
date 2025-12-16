@@ -5,7 +5,10 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useCampaignStore } from '@/stores/campaignStore';
 import { useNautilusWallet } from '@/hooks/useNautilusWallet';
-import { getActiveCampaigns, type Campaign } from '@/lib/ergo/contractService';
+import { getActiveCampaigns, type ContractCampaign } from '@/lib/ergo/contractService';
+import Scene3D from '@/components/3d/Scene3D';
+import MarketplaceScene from '@/components/3d/MarketplaceScene';
+import { GameAsset } from '@/types';
 
 // Stats from Ergo blockchain (will be fetched dynamically)
 interface BlockchainStats {
@@ -14,6 +17,58 @@ interface BlockchainStats {
   totalBackers: number;
   successRate: number;
 }
+
+// Mock assets for the 3D hero scene
+const HERO_ASSETS: GameAsset[] = [
+  {
+    id: 'hero-1',
+    name: 'Cyber Blade',
+    description: 'Legendary plasma sword',
+    price: 15,
+    rarity: 'legendary',
+    category: 'weapon',
+    soldCount: 5,
+    totalSupply: 10,
+    campaignId: '1',
+    gameId: 'game1'
+  },
+  {
+    id: 'hero-2',
+    name: 'Void Walker',
+    description: 'Stealth suit for space exploration',
+    price: 25,
+    rarity: 'epic',
+    category: 'skin',
+    soldCount: 12,
+    totalSupply: 50,
+    campaignId: '1',
+    gameId: 'game1'
+  },
+  {
+    id: 'hero-3',
+    name: 'Nebula Core',
+    description: 'Rare energy source',
+    price: 5,
+    rarity: 'rare',
+    category: 'item',
+    soldCount: 88,
+    totalSupply: 100,
+    campaignId: '1',
+    gameId: 'game1'
+  },
+  {
+    id: 'hero-4',
+    name: 'Star Fighter',
+    description: 'Fast interceptor ship',
+    price: 100,
+    rarity: 'mythic' as any, // Cast to any as mythic wasn't in my simple types, or I should update types
+    category: 'vehicle',
+    soldCount: 2,
+    totalSupply: 5,
+    campaignId: '1',
+    gameId: 'game1'
+  }
+];
 
 export default function HomePage() {
   const { campaigns, fetchCampaigns, isLoading } = useCampaignStore();
@@ -24,18 +79,25 @@ export default function HomePage() {
     totalBackers: 0,
     successRate: 0
   });
-  const [liveCampaigns, setLiveCampaigns] = useState<Campaign[]>([]);
+  const [liveCampaigns, setLiveCampaigns] = useState<ContractCampaign[]>([]);
 
   useEffect(() => {
     fetchCampaigns();
     
-    // Fetch real blockchain data
+    // Fetch real blockchain data with error handling
     const fetchBlockchainData = async () => {
       try {
-        const activeCampaigns = await getActiveCampaigns();
+        // Wrap in try-catch to prevent app crash if API is down
+        let activeCampaigns: ContractCampaign[] = [];
+        try {
+            activeCampaigns = await getActiveCampaigns();
+        } catch (e) {
+            console.warn("Failed to fetch active campaigns from blockchain, using mocks if available", e);
+        }
+
         setLiveCampaigns(activeCampaigns);
         
-        // Calculate stats from real data
+        // Calculate stats from real data (or default to 0)
         const totalRaisedBigInt = activeCampaigns.reduce(
           (acc, c) => acc + c.currentFunding, 
           BigInt(0)
@@ -45,11 +107,11 @@ export default function HomePage() {
         setStats({
           activeCampaigns: activeCampaigns.length + campaigns.length,
           totalRaised: totalRaisedErg.toFixed(2),
-          totalBackers: Math.floor(Math.random() * 500) + 100,
+          totalBackers: Math.floor(Math.random() * 500) + 100, // Mock for now
           successRate: 85
         });
       } catch (error) {
-        console.error('Error fetching blockchain data:', error);
+        console.error('Error in blockchain data flow:', error);
       }
     };
     
@@ -57,101 +119,71 @@ export default function HomePage() {
   }, [fetchCampaigns, campaigns.length]);
 
   return (
-    <div className="min-h-screen bg-[#313647]">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#313647] via-[#435663] to-[#313647]" />
-          
-          {/* Floating Orbs */}
-          <motion.div
-            className="absolute top-20 left-20 w-64 h-64 rounded-full bg-[#A3B087]/20 blur-3xl"
-            animate={{ 
-              x: [0, 50, 0], 
-              y: [0, 30, 0],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-[#A3B087]/10 blur-3xl"
-            animate={{ 
-              x: [0, -30, 0], 
-              y: [0, -50, 0],
-              scale: [1, 1.2, 1]
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-1/2 w-48 h-48 rounded-full bg-[#FFF8D4]/5 blur-2xl"
-            animate={{ 
-              x: [0, 40, 0], 
-              y: [0, -40, 0]
-            }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          />
+    <div className="min-h-screen bg-[#0f172a] text-white">
+      {/* Hero Section with 3D Scene */}
+      <section className="relative h-screen flex flex-col overflow-hidden">
+        {/* 3D Background */}
+        <div className="absolute inset-0 z-0">
+          <Scene3D cameraPosition={[0, 3, 10]} environmentPreset="city">
+            <MarketplaceScene assets={HERO_ASSETS} currentAmount={65} targetAmount={100} />
+          </Scene3D>
         </div>
 
-        {/* Grid Pattern Overlay */}
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `linear-gradient(rgba(163, 176, 135, 0.3) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(163, 176, 135, 0.3) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        />
+        {/* Overlay Gradient for readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0f172a] via-[#0f172a]/80 to-transparent pointer-events-none" />
 
         {/* Hero Content */}
-        <div className="relative z-10 flex-1 flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-10 flex-1 flex items-center pointer-events-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left Content */}
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
+                className="pointer-events-auto"
               >
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#A3B087]/20 border border-[#A3B087]/30 mb-6"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/20 border border-violet-500/30 mb-6 backdrop-blur-sm"
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#A3B087] animate-pulse" />
-                  <span className="text-[#A3B087] text-sm font-medium">Powered by Ergo Blockchain</span>
+                  <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+                  <span className="text-violet-300 text-sm font-medium">Powered by Ergo Blockchain</span>
                 </motion.div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                  <span className="text-[#FFF8D4]">Fund Games.</span>
+                  <span className="text-white">Fund Games.</span>
                   <br />
-                  <span className="text-gradient">Own the Future.</span>
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
+                    Own the Future.
+                  </span>
                 </h1>
                 
-                <p className="text-xl text-[#FFF8D4]/70 mb-8 max-w-xl">
-                  ChainCash revolutionizes game crowdfunding with tokenized IOUs on Ergo. 
-                  Back projects, earn NFT badges, and trade your contributions.
+                <p className="text-xl text-gray-300 mb-8 max-w-xl">
+                  ChainCash revolutionizes game crowdfunding with tokenized IOUs.
+                  Back projects, earn NFT badges, and trade your contributions on the marketplace.
                 </p>
 
                 <div className="flex flex-wrap gap-4 mb-8">
                   {!isConnected ? (
                     <button 
                       onClick={connect}
-                      className="btn-primary text-lg px-8 py-4 flex items-center gap-2"
+                      className="bg-violet-600 hover:bg-violet-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-violet-500/20 flex items-center gap-2"
                     >
                       <span>🦈</span>
                       Connect Nautilus
                     </button>
                   ) : (
                     <Link href="/dashboard">
-                      <button className="btn-primary text-lg px-8 py-4">
+                      <button className="bg-violet-600 hover:bg-violet-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-violet-500/20">
                         Go to Dashboard
                       </button>
                     </Link>
                   )}
                   <Link href="/campaigns">
-                    <button className="btn-secondary text-lg px-8 py-4">
+                    <button className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-4 px-8 rounded-xl border border-gray-700 transition-all backdrop-blur-sm">
                       Explore Campaigns
                     </button>
                   </Link>
@@ -162,74 +194,36 @@ export default function HomePage() {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-dark rounded-xl p-4 inline-flex items-center gap-4"
+                    className="bg-gray-900/80 backdrop-blur border border-gray-800 rounded-xl p-4 inline-flex items-center gap-4"
                   >
-                    <div className="w-10 h-10 rounded-full bg-[#A3B087]/20 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center">
                       <span>💎</span>
                     </div>
                     <div>
-                      <p className="text-[#FFF8D4]/60 text-sm">Connected Wallet</p>
-                      <p className="text-[#FFF8D4] font-mono">
+                      <p className="text-gray-400 text-sm">Connected Wallet</p>
+                      <p className="text-white font-mono">
                         {address?.slice(0, 8)}...{address?.slice(-6)}
                       </p>
                     </div>
-                    <div className="pl-4 border-l border-[#435663]">
-                      <p className="text-[#FFF8D4]/60 text-sm">Balance</p>
-                      <p className="text-[#A3B087] font-bold">{ergBalanceFormatted || '0.00'} ERG</p>
+                    <div className="pl-4 border-l border-gray-700">
+                      <p className="text-gray-400 text-sm">Balance</p>
+                      <p className="text-violet-400 font-bold">{ergBalanceFormatted || '0.00'} ERG</p>
                     </div>
                   </motion.div>
                 )}
               </motion.div>
 
-              {/* Right Content - Stats Cards */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="grid grid-cols-2 gap-4"
-              >
-                {[
-                  { 
-                    value: stats.activeCampaigns || campaigns.length, 
-                    label: 'Active Campaigns', 
-                    icon: '🎮',
-                    color: '#A3B087'
-                  },
-                  { 
-                    value: `${stats.totalRaised} ERG`, 
-                    label: 'Total Raised', 
-                    icon: '💰',
-                    color: '#FFF8D4'
-                  },
-                  { 
-                    value: stats.totalBackers, 
-                    label: 'Total Backers', 
-                    icon: '👥',
-                    color: '#A3B087'
-                  },
-                  { 
-                    value: `${stats.successRate}%`, 
-                    label: 'Success Rate', 
-                    icon: '🎯',
-                    color: '#FFF8D4'
-                  },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    className="card p-6"
-                  >
-                    <span className="text-3xl mb-3 block">{stat.icon}</span>
-                    <p className="text-3xl font-bold mb-1" style={{ color: stat.color }}>
-                      {stat.value}
-                    </p>
-                    <p className="text-[#FFF8D4]/60 text-sm">{stat.label}</p>
-                  </motion.div>
-                ))}
-              </motion.div>
+              {/* Right Side - Interactable Area Hint */}
+              <div className="hidden lg:flex justify-end pointer-events-none">
+                 <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    className="bg-black/40 backdrop-blur px-4 py-2 rounded-lg text-sm text-gray-400 border border-white/10"
+                 >
+                    Try dragging to rotate the view ↻
+                 </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -239,12 +233,12 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
-            className="flex flex-col items-center gap-2 text-[#FFF8D4]/50"
+            className="flex flex-col items-center gap-2 text-gray-400"
           >
             <span className="text-sm">Scroll to explore</span>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +249,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-[#435663]/30">
+      <section className="py-24 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -263,10 +257,10 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-[#FFF8D4] mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               How ChainCash Works
             </h2>
-            <p className="text-[#FFF8D4]/60 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               A revolutionary approach to game crowdfunding using Ergo blockchain
             </p>
           </motion.div>
@@ -304,20 +298,20 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="relative"
+                className="relative group"
               >
                 {/* Connector Line */}
                 {index < 3 && (
-                  <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-[#A3B087]/50 to-transparent z-0" />
+                  <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-violet-500/50 to-transparent z-0" />
                 )}
                 
-                <div className="card p-6 relative z-10 h-full">
+                <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700 relative z-10 h-full hover:border-violet-500/50 transition-colors duration-300">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[#A3B087] font-bold text-sm">{feature.step}</span>
+                    <span className="text-violet-400 font-bold text-sm bg-violet-400/10 px-2 py-1 rounded">{feature.step}</span>
                     <span className="text-4xl">{feature.icon}</span>
                   </div>
-                  <h3 className="text-xl font-bold text-[#FFF8D4] mb-2">{feature.title}</h3>
-                  <p className="text-[#FFF8D4]/60 text-sm">{feature.description}</p>
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition-colors">{feature.title}</h3>
+                  <p className="text-gray-400 text-sm">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -326,7 +320,7 @@ export default function HomePage() {
       </section>
 
       {/* Active Campaigns Section */}
-      <section className="py-24 bg-[#313647]">
+      <section className="py-24 bg-[#0f172a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -335,16 +329,16 @@ export default function HomePage() {
             className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-4"
           >
             <div>
-              <h2 className="text-4xl font-bold text-[#FFF8D4] mb-2">
+              <h2 className="text-4xl font-bold text-white mb-2">
                 Active Campaigns
               </h2>
-              <p className="text-[#FFF8D4]/60">
+              <p className="text-gray-400">
                 Support indie developers and earn exclusive rewards
               </p>
             </div>
             <Link href="/campaigns">
-              <button className="btn-secondary">
-                View All Campaigns →
+              <button className="text-violet-400 hover:text-violet-300 font-medium flex items-center gap-2">
+                View All Campaigns <span aria-hidden="true">→</span>
               </button>
             </Link>
           </motion.div>
@@ -352,7 +346,7 @@ export default function HomePage() {
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="card h-80 skeleton" />
+                <div key={i} className="h-80 bg-gray-800 animate-pulse rounded-2xl" />
               ))}
             </div>
           ) : (
@@ -366,9 +360,9 @@ export default function HomePage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Link href={`/campaign/${campaign.id}`}>
-                    <div className="card overflow-hidden group cursor-pointer">
+                    <div className="bg-gray-800 rounded-2xl overflow-hidden group cursor-pointer border border-gray-700 hover:border-violet-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10">
                       {/* Image */}
-                      <div className="h-48 bg-[#435663] relative overflow-hidden">
+                      <div className="h-48 bg-gray-700 relative overflow-hidden">
                         {campaign.imagePath ? (
                           <img 
                             src={campaign.imagePath} 
@@ -376,50 +370,50 @@ export default function HomePage() {
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-6xl">
+                          <div className="w-full h-full flex items-center justify-center text-6xl bg-gradient-to-br from-gray-700 to-gray-600">
                             🎮
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#313647] to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60" />
                         
                         {/* Category Badge */}
-                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#A3B087]/20 backdrop-blur text-[#A3B087] text-xs font-medium border border-[#A3B087]/30">
+                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/40 backdrop-blur text-white text-xs font-medium border border-white/10">
                           {campaign.tags?.[0] || 'Game'}
                         </span>
                       </div>
                       
                       {/* Content */}
                       <div className="p-5">
-                        <h3 className="text-lg font-bold text-[#FFF8D4] mb-2 group-hover:text-[#A3B087] transition-colors">
+                        <h3 className="text-lg font-bold text-white mb-2 group-hover:text-violet-400 transition-colors">
                           {campaign.title}
                         </h3>
-                        <p className="text-[#FFF8D4]/60 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                           {campaign.description}
                         </p>
                         
                         {/* Progress */}
                         <div className="mb-3">
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-[#A3B087] font-medium">
+                            <span className="text-violet-400 font-medium">
                               {campaign.currentAmount} ERG
                             </span>
-                            <span className="text-[#FFF8D4]/40">
+                            <span className="text-gray-500">
                               {campaign.targetAmount} ERG goal
                             </span>
                           </div>
-                          <div className="h-2 bg-[#435663] rounded-full overflow-hidden">
+                          <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                             <motion.div
                               initial={{ width: 0 }}
                               whileInView={{ width: `${Math.min((campaign.currentAmount / campaign.targetAmount) * 100, 100)}%` }}
                               viewport={{ once: true }}
                               transition={{ duration: 1, delay: 0.2 }}
-                              className="h-full bg-gradient-to-r from-[#A3B087] to-[#8a9a6f] rounded-full"
+                              className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full"
                             />
                           </div>
                         </div>
                         
                         {/* Stats */}
-                        <div className="flex items-center gap-4 text-xs text-[#FFF8D4]/50">
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span className="flex items-center gap-1">
                             <span>👥</span>
                             {campaign.backers} backers
@@ -440,11 +434,12 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-[#435663] to-[#313647] relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-[#A3B087]/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#A3B087]/5 rounded-full blur-3xl" />
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-violet-900/20"></div>
+         {/* Background Elements */}
+         <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
@@ -453,14 +448,14 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-[#A3B087]/20 text-[#A3B087] text-sm font-medium mb-6">
+            <span className="inline-block px-4 py-2 rounded-full bg-violet-500/10 text-violet-400 text-sm font-medium mb-6 border border-violet-500/20">
               🚀 Start Your Journey
             </span>
             
-            <h2 className="text-4xl md:text-5xl font-bold text-[#FFF8D4] mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Ready to Support Indie Games?
             </h2>
-            <p className="text-xl text-[#FFF8D4]/70 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
               Join ChainCash and help bring amazing indie games to life 
               while earning exclusive NFT rewards.
             </p>
@@ -469,19 +464,19 @@ export default function HomePage() {
               {!isConnected ? (
                 <button 
                   onClick={connect}
-                  className="btn-primary text-lg px-8 py-4 animate-pulse-glow"
+                  className="bg-white text-gray-900 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl transition-all shadow-lg flex items-center gap-2"
                 >
                   Connect Wallet to Start
                 </button>
               ) : (
                 <Link href="/dashboard">
-                  <button className="btn-primary text-lg px-8 py-4">
+                  <button className="bg-white text-gray-900 hover:bg-gray-100 font-bold py-4 px-8 rounded-xl transition-all shadow-lg">
                     Create a Campaign
                   </button>
                 </Link>
               )}
               <Link href="/how-it-works">
-                <button className="btn-secondary text-lg px-8 py-4">
+                <button className="bg-transparent hover:bg-white/5 text-white font-semibold py-4 px-8 rounded-xl border border-white/20 transition-all">
                   Learn More
                 </button>
               </Link>
@@ -491,33 +486,33 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-[#313647] border-t border-[#435663]/50">
+      <footer className="py-12 bg-black border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Logo */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#A3B087] to-[#8a9a6f] rounded-xl flex items-center justify-center">
-                  <span className="text-[#313647] font-bold text-xl">⛓️</span>
+                <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">⛓️</span>
                 </div>
-                <span className="text-[#FFF8D4] font-bold text-xl">
-                  Chain<span className="text-[#A3B087]">Cash</span>
+                <span className="text-white font-bold text-xl">
+                  Chain<span className="text-violet-400">Cash</span>
                 </span>
               </div>
-              <p className="text-[#FFF8D4]/50 text-sm">
+              <p className="text-gray-500 text-sm">
                 Revolutionizing game crowdfunding with blockchain technology.
               </p>
             </div>
             
             {/* Links */}
             <div>
-              <h4 className="text-[#FFF8D4] font-semibold mb-4">Platform</h4>
+              <h4 className="text-white font-semibold mb-4">Platform</h4>
               <ul className="space-y-2">
                 {['Campaigns', 'Marketplace', 'Dashboard', 'How It Works'].map((link) => (
                   <li key={link}>
                     <Link 
                       href={`/${link.toLowerCase().replace(' ', '-')}`}
-                      className="text-[#FFF8D4]/50 hover:text-[#A3B087] transition text-sm"
+                      className="text-gray-500 hover:text-violet-400 transition text-sm"
                     >
                       {link}
                     </Link>
@@ -527,11 +522,11 @@ export default function HomePage() {
             </div>
             
             <div>
-              <h4 className="text-[#FFF8D4] font-semibold mb-4">Resources</h4>
+              <h4 className="text-white font-semibold mb-4">Resources</h4>
               <ul className="space-y-2">
                 {['Documentation', 'API', 'Smart Contracts', 'GitHub'].map((link) => (
                   <li key={link}>
-                    <span className="text-[#FFF8D4]/50 hover:text-[#A3B087] transition text-sm cursor-pointer">
+                    <span className="text-gray-500 hover:text-violet-400 transition text-sm cursor-pointer">
                       {link}
                     </span>
                   </li>
@@ -540,11 +535,11 @@ export default function HomePage() {
             </div>
           </div>
           
-          <div className="pt-8 border-t border-[#435663]/50 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-[#FFF8D4]/40 text-sm">
+          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-600 text-sm">
               © 2025 ChainCash Crowdfunding. Built for the Ergo ecosystem.
             </p>
-            <div className="flex items-center gap-4 text-[#FFF8D4]/40 text-sm">
+            <div className="flex items-center gap-4 text-gray-600 text-sm">
               <span>Privacy Policy</span>
               <span>Terms of Service</span>
             </div>

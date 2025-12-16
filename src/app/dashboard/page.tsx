@@ -7,7 +7,7 @@ import {
   createCampaign, 
   getActiveCampaigns, 
   withdrawMilestone,
-  type Campaign 
+  type ContractCampaign
 } from '@/lib/ergo/contractService';
 import { useCampaignStore } from '@/stores/campaignStore';
 
@@ -101,7 +101,7 @@ export default function DashboardPage() {
 
 function MyCampaigns({ address }: { address: string | null }) {
   const { campaigns: storeCampaigns } = useCampaignStore();
-  const [blockchainCampaigns, setBlockchainCampaigns] = useState<Campaign[]>([]);
+    const [blockchainCampaigns, setBlockchainCampaigns] = useState<ContractCampaign[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isWithdrawing, setIsWithdrawing] = useState<string | null>(null);
 

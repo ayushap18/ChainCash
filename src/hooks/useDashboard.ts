@@ -11,11 +11,11 @@ import {
   withdrawMilestone, 
   getActiveCampaigns,
   getCampaignProgress,
-  type Campaign,
+  type ContractCampaign,
   type CampaignParams 
 } from '@/lib/ergo/contractService';
 
-export interface DashboardCampaign extends Campaign {
+export interface DashboardCampaign extends ContractCampaign {
   title?: string;
   description?: string;
   progress: number;
@@ -122,7 +122,7 @@ export function useDashboard() {
 }
 
 // Helper to determine campaign status
-function getStatus(campaign: Campaign): DashboardCampaign['status'] {
+function getStatus(campaign: ContractCampaign): DashboardCampaign['status'] {
   if (campaign.isExpired) {
     return campaign.isGoalReached ? 'funded' : 'expired';
   }

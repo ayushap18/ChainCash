@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useCampaignStore } from '@/stores/campaignStore';
-import { getActiveCampaigns, type Campaign as BlockchainCampaign } from '@/lib/ergo/contractService';
+import { getActiveCampaigns, type ContractCampaign as BlockchainCampaign } from '@/lib/ergo/contractService';
 
 type StatusFilter = 'all' | 'active' | 'funded' | 'ending-soon';
 type SortBy = 'popular' | 'newest' | 'ending-soon' | 'most-funded';
@@ -44,11 +44,15 @@ export default function CampaignsPage() {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
+      const developerName = typeof campaign.developer === 'string'
+        ? campaign.developer
+        : campaign.developer?.username || '';
+
       return (
         campaign.title.toLowerCase().includes(query) ||
-        campaign.gameTitle.toLowerCase().includes(query) ||
-        campaign.developer.toLowerCase().includes(query) ||
-        campaign.tags?.some(tag => tag.toLowerCase().includes(query))
+        (campaign.gameTitle?.toLowerCase().includes(query) ?? false) ||
+        developerName.toLowerCase().includes(query) ||
+        (campaign.tags?.some(tag => tag.toLowerCase().includes(query)) ?? false)
       );
     }
     
@@ -61,7 +65,7 @@ export default function CampaignsPage() {
       case 'popular':
         return b.backers - a.backers;
       case 'newest':
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       case 'ending-soon':
         return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
       case 'most-funded':
@@ -283,7 +287,9 @@ export default function CampaignsPage() {
                       <h3 className="text-lg font-bold text-[#FFF8D4] mb-1 group-hover:text-[#A3B087] transition-colors">
                         {campaign.title}
                       </h3>
-                      <p className="text-[#FFF8D4]/50 text-sm mb-1">by {campaign.developer}</p>
+                      <p className="text-[#FFF8D4]/50 text-sm mb-1">
+                        by {typeof campaign.developer === 'string' ? campaign.developer : campaign.developer?.username || 'Unknown'}
+                      </p>
                       <p className="text-[#FFF8D4]/60 text-sm mb-4 line-clamp-2">
                         {campaign.description}
                       </p>

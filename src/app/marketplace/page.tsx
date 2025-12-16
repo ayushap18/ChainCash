@@ -58,7 +58,7 @@ export default function MarketplacePage() {
         case 'rarity':
           return rarityOrder[b.rarity] - rarityOrder[a.rarity];
         case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
         case 'popular':
           return b.soldCount - a.soldCount;
         default:

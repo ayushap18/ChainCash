@@ -48,7 +48,7 @@ export default function MyAssetsPage() {
     return true;
   });
 
-  const totalValue = ownedAssets.reduce((sum, a) => sum + a.asset.price * a.quantity, 0);
+  const totalValue = ownedAssets.reduce((sum, a) => sum + a.asset.price * (a.quantity || 1), 0);
 
   if (!isConnected) {
     return (
@@ -183,7 +183,7 @@ export default function MyAssetsPage() {
             <AnimatePresence>
               {filteredAssets.map((userAsset, index) => (
                 <motion.div
-                  key={`${userAsset.asset.id}-${userAsset.transactionHash}`}
+                  key={userAsset.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
@@ -236,7 +236,7 @@ export default function MyAssetsPage() {
                     <div className="mt-4 pt-4 border-t border-[#435663]">
                       <span className="text-[#FFF8D4]/50 text-xs">Current Value</span>
                       <p className="text-[#FFF8D4] font-bold">
-                        {userAsset.asset.price} <span className="text-[#A3B087] text-sm">{userAsset.asset.currency}</span>
+                        {userAsset.asset.price} <span className="text-[#A3B087] text-sm">{userAsset.asset.currency || 'ERG'}</span>
                       </p>
                     </div>
                   </div>
@@ -271,16 +271,16 @@ export default function MyAssetsPage() {
                       <div>
                         <p className="text-[#FFF8D4] font-medium">{userAsset.asset.name}</p>
                         <p className="text-[#FFF8D4]/50 text-sm">
-                          {new Date(userAsset.purchasedAt).toLocaleDateString()}
+                          {new Date(userAsset.purchasedAt || userAsset.acquiredAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-[#FFF8D4] font-medium">
-                        -{userAsset.asset.price} {userAsset.asset.currency}
+                        -{userAsset.asset.price} {userAsset.asset.currency || 'ERG'}
                       </p>
                       <p className="text-[#FFF8D4]/50 text-sm font-mono">
-                        {userAsset.transactionHash.slice(0, 10)}...
+                        {(userAsset.transactionHash || userAsset.txId || 'pending').slice(0, 10)}...
                       </p>
                     </div>
                   </div>
@@ -334,7 +334,7 @@ export default function MyAssetsPage() {
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="p-3 bg-[#435663]/50 rounded-lg">
                       <p className="text-[#FFF8D4]/50 text-xs">Purchase Price</p>
-                      <p className="text-[#FFF8D4] font-bold">{selectedAsset.asset.price} {selectedAsset.asset.currency}</p>
+                      <p className="text-[#FFF8D4] font-bold">{selectedAsset.asset.price} {selectedAsset.asset.currency || 'ERG'}</p>
                     </div>
                     <div className="p-3 bg-[#435663]/50 rounded-lg">
                       <p className="text-[#FFF8D4]/50 text-xs">Quantity Owned</p>
