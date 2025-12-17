@@ -1,251 +1,201 @@
-# ChainCash Crowdfunding Platform 🎮💎
+<div align="center">
 
-A revolutionary 3D/gamified crowdfunding platform for indie games, built with Next.js, React Three Fiber, and Web3 integration. Based on the Ergo ecosystem's **ChainCash concept** for tokenized game asset crowdfunding.
+# ⚡ ChainCash ⚡
+### *Tokenized Gaming Crowdfunding on Blockchain*
 
-![ChainCash Banner](https://via.placeholder.com/1200x400/1a1a2e/8b5cf6?text=ChainCash+Crowdfunding)
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=8B5CF6&center=true&vCenter=true&multiline=true&repeat=false&width=600&height=100&lines=Gamified+Crowdfunding;Powered+by+Web3+%F0%9F%9A%80" alt="Typing SVG" />
 
-## 🌟 What is ChainCash?
+[![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React Three Fiber](https://img.shields.io/badge/React_Three_Fiber-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://docs.pmnd.rs/react-three-fiber)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white)](https://ethereum.org/)
 
-ChainCash revolutionizes game crowdfunding by **tokenizing pre-launch game assets**. Instead of traditional donations, backers purchase **ChainCash Notes** - blockchain-secured tokens representing ownership of future in-game items.
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="700">
 
-### Key Benefits:
-- **🔄 Tradeable Assets** - Trade your notes on secondary markets before game launch
-- **🔒 Blockchain Security** - All transactions verified and permanent
-- **💎 True Ownership** - You own your assets, not just a promise
-- **🛡️ Developer Accountability** - Milestone-based fund release
-
-## 🎯 Features
-
-### For Backers
-- **3D Asset Marketplace** - Browse game assets in an immersive Three.js scene
-- **Interactive 3D Cards** - Floating, animated asset cards with rarity effects
-- **Campaign Progress Meters** - Visual 3D progress indicators for funding goals
-- **Wallet Integration** - Connect via MetaMask
-- **Shopping Cart** - Add assets and checkout with crypto
-- **Asset Portfolio** - Track owned assets, redeem when games launch
-
-### For Developers
-- **Campaign Management** - Create and manage crowdfunding campaigns
-- **Milestone System** - Define funding milestones with rewards
-- **Asset Management** - Create and price tokenized game assets
-- **Backer Analytics** - Track campaign performance
-
-## 🛠️ Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| **Framework** | [Next.js 16](https://nextjs.org/) (App Router) |
-| **3D Graphics** | [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [@react-three/drei](https://github.com/pmndrs/drei) |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com/) |
-| **Animations** | [Framer Motion](https://www.framer.com/motion/) |
-| **State Management** | [Zustand](https://zustand-demo.pmnd.rs/) |
-| **Web3** | Direct Ethereum Provider (MetaMask) |
-| **Language** | TypeScript |
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                        # Next.js App Router pages
-│   ├── page.tsx               # Home page with 3D hero
-│   ├── campaigns/             # Campaign listing with filters
-│   ├── campaign/[id]/         # Individual campaign detail
-│   ├── marketplace/           # Asset marketplace with 3D view
-│   ├── my-assets/             # User's owned assets portfolio
-│   └── how-it-works/          # ChainCash explainer
-├── components/
-│   ├── 3d/                    # Three.js/R3F components
-│   │   ├── Scene3D.tsx        # Main 3D canvas wrapper
-│   │   ├── AssetCard3D.tsx    # 3D floating asset cards
-│   │   ├── ProgressMeter.tsx  # 3D funding progress cylinder
-│   │   ├── RevealAnimation.tsx# Asset reveal particle effects
-│   │   └── MarketplaceScene.tsx# Full marketplace 3D scene
-│   ├── ui/                    # UI components
-│   │   ├── Button.tsx         # Reusable button component
-│   │   ├── AssetCard.tsx      # 2D asset card with purchase
-│   │   ├── CampaignCard.tsx   # Campaign preview card
-│   │   ├── Cart.tsx           # Slide-out shopping cart
-│   │   └── Header.tsx         # Navigation header
-│   └── wallet/                # Web3 components
-│       ├── ConnectWallet.tsx  # Wallet connection UI
-│       └── Web3Provider.tsx   # Provider wrapper
-├── stores/                    # Zustand state stores
-│   ├── campaignStore.ts       # Campaigns & assets state
-│   ├── cartStore.ts           # Shopping cart state
-│   └── walletStore.ts         # Wallet connection state
-├── lib/                       # Utilities
-│   └── wagmi.ts              # Web3 configuration
-└── types/                     # TypeScript types
-    └── index.ts               # ChainCash types
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-- A Web3 wallet (MetaMask recommended)
-
-### Installation
-
-1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd crowdfunding
-```
-
-2. **Install dependencies**
-```bash
-npm install
-```
-
-3. **Start the development server**
-```bash
-npm run dev
-```
-
-4. **Open your browser**
-Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Build for Production
-
-```bash
-npm run build
-npm start
-```
-
-## 📱 Pages Overview
-
-### Home (`/`)
-- Hero section with 3D marketplace scene
-- Featured campaigns
-- How ChainCash works preview
-- Platform statistics
-
-### Campaigns (`/campaigns`)
-- Browse all active crowdfunding campaigns
-- Filter by status (Active, Ending Soon, Funded)
-- Sort by popularity, newest, funding progress
-- Search campaigns by name, developer, or tags
-
-### Campaign Detail (`/campaign/[id]`)
-- Full 3D scene with campaign assets
-- Campaign progress and milestones
-- Available assets grid
-- Developer info and social links
-- About, Updates, and Milestones tabs
-
-### Marketplace (`/marketplace`)
-- All assets from all campaigns
-- Toggle between Grid and 3D view
-- Filter by category and rarity
-- Sort by price, rarity, popularity
-- Price range slider
-- Search functionality
-
-### My Assets (`/my-assets`)
-- Portfolio of owned ChainCash notes
-- Asset statistics and total value
-- Filter by All, Redeemable, Redeemed
-- Transaction history
-- Redeem, sell, or transfer assets
-
-### How It Works (`/how-it-works`)
-- Step-by-step ChainCash explanation
-- Feature comparison vs traditional crowdfunding
-- FAQ section
-- Call-to-action to explore campaigns
-
-## 🎨 Asset Types
-
-| Category | Icon | Description |
-|----------|------|-------------|
-| Character | 👤 | Playable characters |
-| Weapon | ⚔️ | In-game weapons |
-| Skin | 🎨 | Visual customizations |
-| Item | 💎 | Equipment and items |
-| Vehicle | 🚀 | Mounts and vehicles |
-| Consumable | 🧪 | Single-use items |
-
-## 💎 Rarity Tiers
-
-| Rarity | Color | Drop Rate |
-|--------|-------|-----------|
-| Common | Gray | High |
-| Uncommon | Green | Medium-High |
-| Rare | Blue | Medium |
-| Epic | Purple | Low |
-| Legendary | Amber | Very Low |
-| Mythic | Red | Extremely Rare |
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env.local` file:
-
-```env
-# Optional: WalletConnect Project ID
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-```
-
-### Customization
-
-- **Colors**: Edit `tailwind.config.ts` for theme colors
-- **3D Settings**: Modify `Scene3D.tsx` for lighting/environment
-- **Mock Data**: Update `campaignStore.ts` for demo content
-
-## 📜 ChainCash Note System
-
-ChainCash Notes are tokenized IOUs representing:
-
-```typescript
-interface ChainCashNote {
-  id: string;
-  assetId: string;           // Linked game asset
-  issuer: string;            // Developer wallet
-  holder: string;            // Current owner
-  denomination: number;      // Note value
-  currency: 'ERG' | 'SigUSD' | 'ETH';
-  collateralRatio: number;   // Backing percentage
-  maturityDate: Date;        // Game launch date
-  isRedeemable: boolean;     // After launch
-  isRedeemed: boolean;
-}
-```
-
-## 🛣️ Roadmap
-
-- [x] Core platform with 3D marketplace
-- [x] Wallet integration (MetaMask)
-- [x] Campaign and asset management
-- [x] Shopping cart and checkout flow
-- [x] User asset portfolio
-- [ ] Ergo blockchain integration
-- [ ] Smart contract deployment
-- [ ] Secondary marketplace trading
-- [ ] Campaign creation wizard
-- [ ] Mobile responsive 3D
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by [Ergo ChainCash](https://github.com/kushti/chaincash)
-- 3D components powered by [React Three Fiber](https://github.com/pmndrs/react-three-fiber)
-- UI inspired by modern Web3 platforms
+</div>
 
 ---
 
-**Built with 💜 for the indie game community**
+## 🎮 What is ChainCash?
+
+<table>
+<tr>
+<td width="60%">
+
+**Revolutionizing indie game funding** through blockchain-secured **ChainCash Notes** - tradeable tokens representing pre-launch game assets.
+
+🔗 **Blockchain Security** • 💎 **True Ownership** • 🔄 **Secondary Trading** • 🛡️ **Milestone-Based Release**
+
+> Built on Ergo ecosystem principles for tokenized gaming economies
+
+</td>
+<td width="40%">
+
+```typescript
+interface ChainCashNote {
+  assetId: string;
+  issuer: string;
+  holder: string;
+  denomination: number;
+  isRedeemable: boolean;
+}
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+## ⚡ Features
+
+<div align="center">
+
+| 🎯 For Backers | 🛠️ For Developers |
+|:---|:---|
+| 🌐 **3D Asset Marketplace** with React Three Fiber | 📊 **Campaign Management Dashboard** |
+| 💳 **MetaMask Integration** & Crypto Checkout | 🎯 **Milestone System** with rewards |
+| 🎨 **Interactive 3D Cards** with rarity effects | 📈 **Backer Analytics** & performance tracking |
+| 💼 **Asset Portfolio** tracking & redemption | 🔧 **Asset Creator** with pricing controls |
+
+</div>
+
+---
+
+## 🔥 Tech Stack
+
+<div align="center">
+
+<img src="https://skillicons.dev/icons?i=nextjs,react,typescript,tailwind,threejs,ethereum,nodejs,git" alt="Tech Stack" />
+
+| Layer | Technology |
+|:---:|:---|
+| 🎨 **Frontend** | Next.js 16 (App Router) + TypeScript |
+| 🎭 **3D Graphics** | React Three Fiber + drei |
+| 💅 **Styling** | Tailwind CSS + Framer Motion |
+| ⚡ **State** | Zustand |
+| 🔐 **Web3** | Ethereum Provider (MetaMask) |
+
+</div>
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repo
+git clone https://github.com/ayushap18/ChainCash.git
+cd ChainCash
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+<div align="center">
+
+**🌐 Open [http://localhost:3000](http://localhost:3000)**
+
+</div>
+
+---
+
+## 💎 Asset Rarity System
+
+<div align="center">
+
+| Rarity | Color | Effect |
+|:---:|:---:|:---:|
+| ⚪ **Common** | Gray | Standard glow |
+| 🟢 **Uncommon** | Green | Soft pulse |
+| 🔵 **Rare** | Blue | Wave animation |
+| 🟣 **Epic** | Purple | Particle trail |
+| 🟡 **Legendary** | Amber | Aura effect |
+| 🔴 **Mythic** | Red | Cosmic particles |
+
+</div>
+
+---
+
+## 📁 Architecture
+
+```
+src/
+├── app/                    # Next.js pages
+│   ├── campaigns/         # Campaign browser
+│   ├── marketplace/       # 3D asset marketplace
+│   └── my-assets/         # User portfolio
+├── components/
+│   ├── 3d/               # React Three Fiber scenes
+│   ├── ui/               # UI components
+│   └── wallet/           # Web3 integration
+└── stores/               # Zustand state management
+```
+
+---
+
+## 🛣️ Roadmap
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[✅ Core Platform] --> B[✅ 3D Marketplace]
+    B --> C[✅ Wallet Integration]
+    C --> D[🔄 Ergo Blockchain]
+    D --> E[📅 Smart Contracts]
+    E --> F[📅 Secondary Trading]
+```
+
+</div>
+
+- [x] 3D marketplace with React Three Fiber
+- [x] MetaMask wallet integration
+- [x] Campaign & asset management
+- [x] Shopping cart & checkout
+- [ ] Ergo blockchain integration
+- [ ] Smart contract deployment
+- [ ] Secondary marketplace
+- [ ] Mobile responsive 3D
+
+---
+
+## 🤝 Contributing
+
+<div align="center">
+
+<img src="https://user-images.githubusercontent.com/74038190/212284087-bbe7e430-757e-4901-90bf-4cd2ce3e1852.gif" width="100">
+
+**Contributions welcome!** Fork • Code • PR
+
+```bash
+git checkout -b feature/amazing-feature
+git commit -m 'Add amazing feature'
+git push origin feature/amazing-feature
+```
+
+</div>
+
+---
+
+## 📄 License
+
+<div align="center">
+
+MIT License © 2025 ChainCash
+
+**Built with 💜 for indie game developers**
+
+<img src="https://user-images.githubusercontent.com/74038190/212284115-f47e185d-9a1f-4a5b-8478-90def8f31246.gif" width="400">
+
+---
+
+### 🌟 Star us on GitHub — it motivates us a lot!
+
+[![GitHub stars](https://img.shields.io/github/stars/ayushap18/ChainCash?style=social)](https://github.com/ayushap18/ChainCash/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/ayushap18/ChainCash?style=social)](https://github.com/ayushap18/ChainCash/network/members)
+
+</div>
