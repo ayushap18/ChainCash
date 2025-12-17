@@ -44,9 +44,14 @@ export default function Cart() {
       items.forEach(item => {
         for (let i = 0; i < item.quantity; i++) {
           const userAsset: UserAsset = {
+            id: crypto.randomUUID(),
+            userId: address,
+            assetId: item.asset.id,
             asset: item.asset,
             quantity: 1,
-            purchasedAt: new Date(),
+            acquiredAt: new Date().toISOString(),
+            purchasedAt: new Date().toISOString(),
+            status: 'active',
             transactionHash: `0x${Math.random().toString(16).slice(2, 66)}`,
             isRedeemed: false,
           };
@@ -166,7 +171,7 @@ export default function Cart() {
                           {item.asset.rarity}
                         </p>
                         <p className="text-[#A3B087] text-sm font-medium">
-                          {item.asset.price} {item.asset.currency}
+                          {item.asset.price} {item.asset.currency || 'ERG'}
                         </p>
 
                         {/* Quantity controls */}

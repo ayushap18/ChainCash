@@ -44,7 +44,7 @@ export interface CampaignParams {
   creatorAddress: string;
 }
 
-export interface Campaign {
+export interface ContractCampaign {
   boxId: string;
   campaignId: string;
   creatorPK: string;
@@ -271,7 +271,7 @@ export async function triggerRefund(campaignBoxId: string, backerAddress: string
 /**
  * Fetch campaign box from blockchain
  */
-async function fetchCampaignBox(boxId: string): Promise<Campaign | null> {
+async function fetchCampaignBox(boxId: string): Promise<ContractCampaign | null> {
   try {
     const response = await fetch(`https://api.ergoplatform.com/api/v1/boxes/${boxId}`);
     if (!response.ok) return null;
@@ -300,7 +300,7 @@ async function fetchCampaignBox(boxId: string): Promise<Campaign | null> {
 /**
  * Get all active campaigns
  */
-export async function getActiveCampaigns(): Promise<Campaign[]> {
+export async function getActiveCampaigns(): Promise<ContractCampaign[]> {
   try {
     // In production, query explorer API for boxes with crowdfunding contract
     const response = await fetch(
@@ -333,7 +333,7 @@ export async function getActiveCampaigns(): Promise<Campaign[]> {
 /**
  * Calculate campaign progress percentage
  */
-export function getCampaignProgress(campaign: Campaign): number {
+export function getCampaignProgress(campaign: ContractCampaign): number {
   if (campaign.fundingGoal === BigInt(0)) return 0;
   return Number((campaign.currentFunding * BigInt(100)) / campaign.fundingGoal);
 }
@@ -341,7 +341,7 @@ export function getCampaignProgress(campaign: Campaign): number {
 /**
  * Get time remaining for campaign
  */
-export async function getTimeRemaining(campaign: Campaign): Promise<{
+export async function getTimeRemaining(campaign: ContractCampaign): Promise<{
   blocks: number;
   estimatedMinutes: number;
 }> {
